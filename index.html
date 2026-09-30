@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroBook - Airline Reservation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h2>AeroBook</h2>
+        <nav>
+            <button id="nav-dashboard" class="active">Dashboard</button>
+            <button id="nav-search">Search Flights</button>
+            <button id="nav-bookings">My Bookings</button>
+            <button id="nav-settings">Settings</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Dashboard View -->
+        <section id="view-dashboard" class="view">
+            <div class="grid">
+                <div class="card">
+                    <h3>Total Bookings</h3>
+                    <p id="dash-total-bookings" style="font-size: 2.5rem; font-weight: 600; color: var(--accent-primary);">0</p>
+                </div>
+                <div class="card">
+                    <h3>Total Spent</h3>
+                    <p id="dash-total-spent" style="font-size: 2.5rem; font-weight: 600; color: var(--color-success);">$0.00</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Available Flights Overview</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Flight</th>
+                                <th>Route</th>
+                                <th>Date</th>
+                                <th>Price</th>
+                                <th>Available Seats</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-flights-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Flights View -->
+        <section id="view-search" class="view hidden">
+            <div class="card">
+                <h3>Search Flights</h3>
+                <form id="search-form" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-top: 16px;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="search-origin">Origin (Airport Code)</label>
+                        <input type="text" id="search-origin" placeholder="e.g. JFK">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="search-dest">Destination (Airport Code)</label>
+                        <input type="text" id="search-dest" placeholder="e.g. LHR">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn">Search</button>
+                        <button type="button" id="btn-show-all" class="btn" style="background: var(--bg-elevated); color: var(--text-primary);">Show All</button>
+                    </div>
+                </form>
+            </div>
+            <div id="search-results" class="grid hidden"></div>
+        </section>
+
+        <!-- My Bookings View -->
+        <section id="view-bookings" class="view hidden">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;">
+                    <h3>My Bookings</h3>
+                    <button id="btn-reset" class="btn btn-danger">Reset All Data</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Flight</th>
+                                <th>Passenger</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings View -->
+        <section id="view-settings" class="view hidden">
+            <div class="card" style="max-width: 600px;">
+                <h3>Preferences</h3>
+                <form id="settings-form" style="margin-top: 16px;">
+                    <label for="setting-currency">Currency</label>
+                    <select id="setting-currency">
+                        <option value="USD">US Dollar ($)</option>
+                        <option value="INR">Indian Rupee (₹)</option>
+                        <option value="EUR">Euro (€)</option>
+                        <option value="GBP">British Pound (£)</option>
+                        <option value="JPY">Japanese Yen (¥)</option>
+                        <option value="AUD">Australian Dollar (A$)</option>
+                    </select>
+                    
+                    <div style="margin-top: 24px; text-align: right;">
+                        <button type="submit" class="btn">Save Preferences</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
+            <h3>Book Flight <span id="modal-flight-num" style="color: var(--accent-primary);"></span></h3>
+            <p id="modal-flight-route" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
+            
+            <form id="booking-form">
+                <input type="hidden" id="modal-flight-id">
+                
+                <label for="modal-name">Passenger Name</label>
+                <input type="text" id="modal-name" required placeholder="Enter full name">
+                
+                <label for="modal-count">Number of Passengers</label>
+                <input type="number" id="modal-count" min="1" max="10" value="1" required>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 24px 0;">
+                    <span style="color: var(--text-secondary);">Total Amount:</span>
+                    <span id="modal-total" style="color: var(--text-primary); font-weight: 600; font-size: 1.5rem;">$0.00</span>
+                </div>
+                
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn" id="btn-cancel-modal" style="background: var(--bg-elevated); color: var(--text-primary);">Cancel</button>
+                    <button type="submit" class="btn">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">Message</div>
+
+    <script src="app.js"></script>
+</body>
+</html>
